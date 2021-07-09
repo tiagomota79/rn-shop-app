@@ -6,34 +6,49 @@ import {
   TouchableOpacity,
   Image,
   Button,
+  TouchableNativeFeedback,
+  Platform,
 } from 'react-native';
 import colours from '../../constants/colours';
 import stylesConstants from '../../constants/stylesConstants';
 
 const ProductItem = ({ productData, onViewDetails, onAddToCart }) => {
+  let TouchableElement = TouchableOpacity;
+
+  if (Platform.OS === 'android') TouchableElement = TouchableNativeFeedback;
+
   return (
     <View style={styles.container}>
-      <Image style={styles.image} source={{ uri: productData.imageUrl }} />
-      <View style={styles.details}>
-        <Text style={styles.title}>{productData.title}</Text>
-        <Text style={styles.price}>
-          {productData.price.toLocaleString('en-CA', {
-            style: 'currency',
-            currency: 'CAD',
-          })}
-        </Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          title='View Details'
-          onPress={onViewDetails}
-          color={colours.primary}
-        />
-        <Button
-          title='Add To Cart'
-          onPress={onAddToCart}
-          color={colours.primary}
-        />
+      <View style={styles.android}>
+        <TouchableElement onPress={onViewDetails} useForeground>
+          <View>
+            <Image
+              style={styles.image}
+              source={{ uri: productData.imageUrl }}
+            />
+            <View style={styles.details}>
+              <Text style={styles.title}>{productData.title}</Text>
+              <Text style={styles.price}>
+                {productData.price.toLocaleString('en-CA', {
+                  style: 'currency',
+                  currency: 'CAD',
+                })}
+              </Text>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                title='View Details'
+                onPress={onViewDetails}
+                color={colours.primary}
+              />
+              <Button
+                title='Add To Cart'
+                onPress={onAddToCart}
+                color={colours.primary}
+              />
+            </View>
+          </View>
+        </TouchableElement>
       </View>
     </View>
   );
@@ -50,6 +65,10 @@ const styles = StyleSheet.create({
     borderRadius: stylesConstants.borderRadius,
     height: 300,
     margin: stylesConstants.margin,
+  },
+  android: {
+    overflow: 'hidden',
+    borderRadius: stylesConstants.borderRadius,
   },
   image: {
     width: '100%',
