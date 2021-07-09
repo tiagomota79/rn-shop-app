@@ -8,11 +8,15 @@ import ProductItem from '../../components/shop/ProductItem';
 // Slices
 import { selectProducts } from '../../slices/productsSlice';
 
-const ProductOverviewScreen = () => {
+const ProductOverviewScreen = ({ navigation }) => {
   const products = useSelector(selectProducts);
 
   const handleViewDetails = (itemData) => {
     console.log('Product id', itemData.item.id);
+    navigation.navigate({
+      routeName: 'ProductDetail',
+      params: { productData: itemData.item },
+    });
   };
 
   const handleAddToCart = (itemData) => {

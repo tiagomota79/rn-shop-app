@@ -1,12 +1,31 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {
+  ScrollView,
+  View,
+  Text,
+  Image,
+  Button,
+  StyleSheet,
+} from 'react-native';
 
-const ProductDetailScreen = () => {
+const ProductDetailScreen = ({ navigation }) => {
+  const productData = navigation.getParam('productData');
+
   return (
     <View style={styles.container}>
-      <Text>This is the ProductDetailScreen component!</Text>
+      <Text>{productData.title}</Text>
+      <Text>{productData.price}</Text>
+      <Text>{productData.description}</Text>
     </View>
   );
+};
+
+ProductDetailScreen.navigationOptions = (navigationData) => {
+  const title = navigationData.navigation.getParam('productData').title;
+
+  return {
+    headerTitle: title,
+  };
 };
 
 const styles = StyleSheet.create({
