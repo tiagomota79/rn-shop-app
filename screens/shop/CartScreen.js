@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import CartHeaderTitles from '../../components/shop/CartHeaderTitles';
 
 // Components
 import CartItem from '../../components/shop/CartItem';
@@ -57,7 +58,7 @@ const CartScreen = () => {
   };
 
   const handleOrderNow = () => {
-    dispatch(addOrder({ cartItems, totalAmount }));
+    dispatch(addOrder({ cartItems: arrayOfCartItems, totalAmount }));
     dispatch(clearCart());
   };
 
@@ -80,32 +81,7 @@ const CartScreen = () => {
           disabled={!arrayOfCartItems.length}
         />
       </View>
-      {arrayOfCartItems.length > 0 && (
-        <View style={styles.tableHeader}>
-          <Text style={{ ...styles.tableHeaderText, width: '55%' }}>
-            Product
-          </Text>
-          <Text
-            style={{
-              ...styles.tableHeaderText,
-              width: '15%',
-              textAlign: 'right',
-            }}
-          >
-            Quantity
-          </Text>
-          <Text
-            style={{
-              ...styles.tableHeaderText,
-              width: '25%',
-              textAlign: 'right',
-            }}
-          >
-            Sub-Total
-          </Text>
-          <View style={styles.spacer} />
-        </View>
-      )}
+      {arrayOfCartItems.length > 0 && <CartHeaderTitles fromCart />}
       {!arrayOfCartItems.length && (
         <Text style={styles.emptyCart}>The cart is empty!</Text>
       )}
@@ -118,6 +94,7 @@ const CartScreen = () => {
               onRemove={() => {
                 handleRemoveFromCart(itemData.item);
               }}
+              deletable
             />
           )}
         />
@@ -162,24 +139,6 @@ const styles = StyleSheet.create({
   },
   emptyCart: {
     fontFamily: 'open-sans',
-  },
-  tableHeader: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: stylesConstants.margin,
-    paddingHorizontal: stylesConstants.padding,
-  },
-  tableHeaderText: {
-    fontFamily: 'open-sans',
-    fontSize: 10,
-  },
-  cartItems: {
-    width: '100%',
-  },
-  spacer: {
-    width: '5%',
   },
 });
 

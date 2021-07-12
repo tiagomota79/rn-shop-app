@@ -15,7 +15,7 @@ import stylesConstants from '../../constants/stylesConstants';
 // Utils
 import { formatPrice } from '../../utils';
 
-const CartItem = ({ productData, onRemove }) => {
+const CartItem = ({ productData, onRemove, deletable }) => {
   return (
     <View style={styles.container}>
       <Text style={{ ...styles.text, width: '55%' }} numberOfLines={1}>
@@ -32,13 +32,15 @@ const CartItem = ({ productData, onRemove }) => {
           ? formatPrice(productData.sum)
           : `$${productData.sum.toFixed(2)}`}
       </Text>
-      <TouchableOpacity onPress={onRemove} style={styles.deleteButton}>
-        <Ionicons
-          name={Platform.OS === 'ios' ? 'ios-trash' : 'md-trash'}
-          size={20}
-          color={colours.red}
-        />
-      </TouchableOpacity>
+      {deletable && (
+        <TouchableOpacity onPress={onRemove} style={styles.deleteButton}>
+          <Ionicons
+            name={Platform.OS === 'ios' ? 'ios-trash' : 'md-trash'}
+            size={20}
+            color={colours.red}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
