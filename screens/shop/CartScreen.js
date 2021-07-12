@@ -18,6 +18,7 @@ import stylesConstants from '../../constants/stylesConstants';
 
 // Slices
 import {
+  clearCart,
   removeFromCart,
   selectItemsInCart,
   selectTotalAmount,
@@ -57,6 +58,7 @@ const CartScreen = () => {
 
   const handleOrderNow = () => {
     dispatch(addOrder({ cartItems, totalAmount }));
+    dispatch(clearCart());
   };
 
   return (
