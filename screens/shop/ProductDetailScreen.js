@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     height: 300,
   },
   title: {
+    fontFamily: 'open-sans-bold',
     fontSize: 25,
     color: colours.primary,
     textAlign: 'center',
@@ -75,12 +76,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   price: {
+    fontFamily: 'open-sans',
     fontSize: 20,
     color: colours.priceColour,
     textAlign: 'center',
     marginVertical: stylesConstants.margin,
   },
   description: {
+    fontFamily: 'open-sans',
     fontSize: 14,
     textAlign: 'center',
     marginHorizontal: stylesConstants.margin,
