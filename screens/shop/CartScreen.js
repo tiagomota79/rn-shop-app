@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 // Components
 import CartItem from '../../components/shop/CartItem';
@@ -17,10 +17,16 @@ import colours from '../../constants/colours';
 import stylesConstants from '../../constants/stylesConstants';
 
 // Slices
-import { selectItemsInCart, selectTotalAmount } from '../../slices/cartSlice';
+import {
+  removeFromCart,
+  selectItemsInCart,
+  selectTotalAmount,
+} from '../../slices/cartSlice';
 import { formatPrice } from '../../utils';
 
 const CartScreen = () => {
+  const dispatch = useDispatch();
+
   const cartTotal = useSelector(selectTotalAmount);
   const cartItems = useSelector(selectItemsInCart);
 
@@ -37,10 +43,14 @@ const CartScreen = () => {
       });
     }
 
-    return arrayOfCartItems;
+    return arrayOfCartItems.sort((a, b) => (a.id > b.id ? 1 : -1));
   };
 
   const arrayOfCartItems = objectOfCartsToArray();
+
+  const handleRemoveFromCart = (item) => {
+    dispatch(removeFromCart(item.id));
+  };
 
   return (
     <View style={styles.container}>
@@ -48,6 +58,7 @@ const CartScreen = () => {
         <Text style={styles.summaryText}>
           Total:
           <Text style={styles.cartTotal}>
+            {' '}
             {Platform.OS === 'ios'
               ? formatPrice(cartTotal)
               : `$${cartTotal.toFixed(2)}`}
@@ -65,10 +76,22 @@ const CartScreen = () => {
           <Text style={{ ...styles.tableHeaderText, width: '55%' }}>
             Product
           </Text>
-          <Text style={{ ...styles.tableHeaderText, width: '15%' }}>
+          <Text
+            style={{
+              ...styles.tableHeaderText,
+              width: '15%',
+              textAlign: 'right',
+            }}
+          >
             Quantity
           </Text>
-          <Text style={{ ...styles.tableHeaderText, width: '25%' }}>
+          <Text
+            style={{
+              ...styles.tableHeaderText,
+              width: '25%',
+              textAlign: 'right',
+            }}
+          >
             Sub-Total
           </Text>
           <View style={styles.spacer} />
@@ -84,7 +107,7 @@ const CartScreen = () => {
             <CartItem
               productData={itemData.item}
               onRemove={() => {
-                console.log(`${itemData.item.productTitle} removed from cart!`);
+                handleRemoveFromCart(itemData.item);
               }}
             />
           )}
