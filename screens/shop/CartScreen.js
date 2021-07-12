@@ -9,6 +9,9 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 
+// Components
+import CartItem from '../../components/shop/CartItem';
+
 // Constants
 import colours from '../../constants/colours';
 import stylesConstants from '../../constants/stylesConstants';
@@ -26,7 +29,7 @@ const CartScreen = () => {
 
     for (const key in cartItems) {
       arrayOfCartItems.push({
-        productId: key,
+        id: key,
         productTitle: cartItems[key].productTitle,
         productPrice: cartItems[key].productPrice,
         quantity: cartItems[key].quantity,
@@ -43,7 +46,7 @@ const CartScreen = () => {
     <View style={styles.container}>
       <View style={styles.summary}>
         <Text style={styles.summaryText}>
-          Total:{' '}
+          Total:
           <Text style={styles.cartTotal}>
             {Platform.OS === 'ios'
               ? formatPrice(cartTotal)
@@ -57,10 +60,36 @@ const CartScreen = () => {
           disabled={!arrayOfCartItems.length}
         />
       </View>
+      {arrayOfCartItems.length > 0 && (
+        <View style={styles.tableHeader}>
+          <Text style={{ ...styles.tableHeaderText, width: '55%' }}>
+            Product
+          </Text>
+          <Text style={{ ...styles.tableHeaderText, width: '15%' }}>
+            Quantity
+          </Text>
+          <Text style={{ ...styles.tableHeaderText, width: '25%' }}>
+            Sub-Total
+          </Text>
+          <View style={styles.spacer} />
+        </View>
+      )}
       {!arrayOfCartItems.length && (
         <Text style={styles.emptyCart}>The cart is empty!</Text>
       )}
-      {arrayOfCartItems.length && <Text>There are products in the cart!</Text>}
+      <View styles={styles.cartItems}>
+        <FlatList
+          data={arrayOfCartItems}
+          renderItem={(itemData) => (
+            <CartItem
+              productData={itemData.item}
+              onRemove={() => {
+                console.log(`${itemData.item.productTitle} removed from cart!`);
+              }}
+            />
+          )}
+        />
+      </View>
     </View>
   );
 };
@@ -97,6 +126,24 @@ const styles = StyleSheet.create({
   },
   emptyCart: {
     fontFamily: 'open-sans',
+  },
+  tableHeader: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: stylesConstants.margin,
+    paddingHorizontal: stylesConstants.padding,
+  },
+  tableHeaderText: {
+    fontFamily: 'open-sans',
+    fontSize: 10,
+  },
+  cartItems: {
+    width: '100%',
+  },
+  spacer: {
+    width: '5%',
   },
 });
 
