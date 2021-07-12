@@ -22,12 +22,15 @@ import {
   selectItemsInCart,
   selectTotalAmount,
 } from '../../slices/cartSlice';
+import { addOrder } from '../../slices/orderSlice';
+
+// Utils
 import { formatPrice } from '../../utils';
 
 const CartScreen = () => {
   const dispatch = useDispatch();
 
-  const cartTotal = useSelector(selectTotalAmount);
+  const totalAmount = useSelector(selectTotalAmount);
   const cartItems = useSelector(selectItemsInCart);
 
   const objectOfCartsToArray = () => {
@@ -52,21 +55,25 @@ const CartScreen = () => {
     dispatch(removeFromCart(item.id));
   };
 
+  const handleOrderNow = () => {
+    dispatch(addOrder({ cartItems, totalAmount }));
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.summary}>
         <Text style={styles.summaryText}>
           Total:
-          <Text style={styles.cartTotal}>
+          <Text style={styles.totalAmount}>
             {' '}
             {Platform.OS === 'ios'
-              ? formatPrice(cartTotal)
-              : `$${cartTotal.toFixed(2)}`}
+              ? formatPrice(totalAmount)
+              : `$${totalAmount.toFixed(2)}`}
           </Text>
         </Text>
         <Button
           title='Order now'
-          onPress={() => {}}
+          onPress={handleOrderNow}
           color={colours.accent}
           disabled={!arrayOfCartItems.length}
         />
@@ -117,6 +124,10 @@ const CartScreen = () => {
   );
 };
 
+CartScreen.navigationOptions = {
+  headerTitle: 'Your Cart',
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -143,7 +154,7 @@ const styles = StyleSheet.create({
     fontFamily: 'open-sans-bold',
     fontSize: 18,
   },
-  cartTotal: {
+  totalAmount: {
     fontFamily: 'open-sans-bold',
     color: colours.primary,
   },
