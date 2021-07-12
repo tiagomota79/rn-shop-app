@@ -7,30 +7,34 @@ import {
   Button,
   StyleSheet,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 // Constants
 import colours from '../../constants/colours';
 import stylesConstants from '../../constants/stylesConstants';
 
+// Slices
+import { addToCart } from '../../slices/cartSlice';
+
 // Utils
 import { formatPrice } from '../../utils';
 
 const ProductDetailScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const productData = navigation.getParam('productData');
 
   const handleAddToCart = () => {
-    console.log(`${productData.title} added to cart!`);
+    dispatch(addToCart(productData));
   };
 
   return (
     <ScrollView>
-      {/* <View style={styles.container}> */}
       <Image style={styles.image} source={{ uri: productData.imageUrl }} />
       <Text style={styles.title}>{productData.title}</Text>
       <View style={styles.buttonContainer}>
         <Button
           title='Add to Cart'
-          onPress={handleAddToCart}
+          onPress={() => handleAddToCart(productData)}
           color={colours.primary}
         />
       </View>
@@ -40,7 +44,6 @@ const ProductDetailScreen = ({ navigation }) => {
           : `$${productData.price}`}
       </Text>
       <Text style={styles.description}>{productData.description}</Text>
-      {/* </View> */}
     </ScrollView>
   );
 };
