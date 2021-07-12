@@ -5,6 +5,7 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 // Components
 import CustomHeaderButton from '../../components/UI/HeaderButton';
+import OrderItem from '../../components/shop/OrderItem';
 
 // Slices
 import { selectOrders } from '../../slices/orderSlice';
@@ -15,7 +16,7 @@ const OrderScreen = () => {
   return (
     <FlatList
       data={orders}
-      renderItem={(itemData) => <Text>{itemData.item.totalAmount}</Text>}
+      renderItem={(itemData) => <OrderItem orderData={itemData.item} />}
     />
   );
 };
