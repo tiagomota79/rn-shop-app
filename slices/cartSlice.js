@@ -1,7 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import PRODUCTS from '../data/dummy-data';
-
 import CartItem from '../model/cart-item';
 
 const initialState = {
@@ -48,7 +46,7 @@ export const cartSlice = createSlice({
 
 export const { addToCart } = cartSlice.actions;
 
-export const selectItemInCart = (state) => state.cart.items;
+export const selectItemsInCart = (state) => state.cart.items;
 export const selectTotalAmount = (state) => state.cart.totalAmount;
 
 export default cartSlice.reducer;
