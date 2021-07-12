@@ -4,4 +4,5 @@ export default {
   primary: '#C2185B',
   accent: '#FFC107',
   priceColour: '#888',
+  red: '#d60000',
 };
