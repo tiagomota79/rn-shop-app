@@ -1,14 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { useSelector } from 'react-redux';
+import { StyleSheet, FlatList } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 
 // Components
 import ProductItem from '../../components/shop/ProductItem';
 
 // Slices
 import { selectProducts } from '../../slices/productsSlice';
+import { addToCart } from '../../slices/cartSlice';
 
 const ProductOverviewScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const products = useSelector(selectProducts);
 
   const handleViewDetails = (itemData) => {
@@ -19,7 +21,7 @@ const ProductOverviewScreen = ({ navigation }) => {
   };
 
   const handleAddToCart = (itemData) => {
-    console.log(`${itemData.item.title} added to cart`);
+    dispatch(addToCart(itemData.item));
   };
 
   const handleRender = (itemData) => (
