@@ -23,7 +23,10 @@ const CartItem = ({ productData, onRemove }) => {
       </Text>
       <Text style={styles.quantity}>{productData.quantity}</Text>
       <Text
-        style={{ ...styles.text, color: colours.priceColour, width: '25%' }}
+        style={{
+          ...styles.text,
+          ...styles.subTotal,
+        }}
       >
         {Platform.OS === 'ios'
           ? formatPrice(productData.sum)
@@ -53,13 +56,19 @@ const styles = StyleSheet.create({
     fontFamily: 'open-sans-bold',
     fontSize: 16,
   },
+  subTotal: {
+    color: colours.priceColour,
+    width: '25%',
+    textAlign: 'right',
+  },
   quantity: {
     fontFamily: 'open-sans',
     width: '15%',
+    textAlign: 'right',
   },
   deleteButton: {
-    // marginLeft: stylesConstants.margin,
     width: '5%',
+    marginHorizontal: stylesConstants.margin / 4,
   },
 });
 
