@@ -1,9 +1,11 @@
 import React from 'react';
-import { StyleSheet, FlatList } from 'react-native';
+import { StyleSheet, FlatList, Platform } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 // Components
 import ProductItem from '../../components/shop/ProductItem';
+import CustomHeaderButton from '../../components/UI/HeaderButton';
 
 // Slices
 import { selectProducts } from '../../slices/productsSlice';
@@ -43,8 +45,21 @@ const styles = StyleSheet.create({
   },
 });
 
-ProductOverviewScreen.navigationOptions = {
-  headerTitle: 'All Products',
+ProductOverviewScreen.navigationOptions = (navigationData) => {
+  return {
+    headerTitle: 'All Products',
+    headerRight: () => (
+      <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+        <Item
+          title='Cart'
+          iconName={Platform.OS === 'ios' ? 'ios-cart' : 'md-cart'}
+          onPress={() => {
+            navigationData.navigation.navigate('Cart');
+          }}
+        />
+      </HeaderButtons>
+    ),
+  };
 };
 
 export default ProductOverviewScreen;
