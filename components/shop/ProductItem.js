@@ -9,8 +9,13 @@ import {
   TouchableNativeFeedback,
   Platform,
 } from 'react-native';
+
+// Constants
 import colours from '../../constants/colours';
 import stylesConstants from '../../constants/stylesConstants';
+
+// Utils
+import { formatPrice } from '../../utils';
 
 const ProductItem = ({ productData, onViewDetails, onAddToCart }) => {
   let TouchableElement = TouchableOpacity;
@@ -29,10 +34,9 @@ const ProductItem = ({ productData, onViewDetails, onAddToCart }) => {
             <View style={styles.details}>
               <Text style={styles.title}>{productData.title}</Text>
               <Text style={styles.price}>
-                {productData.price.toLocaleString('en-CA', {
-                  style: 'currency',
-                  currency: 'CAD',
-                })}
+                {Platform.OS === 'ios'
+                  ? formatPrice(productData.price)
+                  : `$${productData.price}`}
               </Text>
             </View>
             <View style={styles.buttonContainer}>
