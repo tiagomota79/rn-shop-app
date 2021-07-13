@@ -5,4 +5,5 @@ export default {
   accent: '#FFC107',
   priceColour: '#888',
   red: '#d60000',
+  lightGrey: '#dedede',
 };
