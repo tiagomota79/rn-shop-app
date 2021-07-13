@@ -12,6 +12,7 @@ import CartHeaderTitles from '../../components/shop/CartHeaderTitles';
 
 // Components
 import CartItem from '../../components/shop/CartItem';
+import Card from '../../components/UI/Card';
 
 // Constants
 import colours from '../../constants/colours';
@@ -64,7 +65,7 @@ const CartScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.summary}>
+      <Card style={styles.summary}>
         <Text style={styles.summaryText}>
           Total:
           <Text style={styles.totalAmount}>
@@ -80,7 +81,7 @@ const CartScreen = () => {
           color={colours.accent}
           disabled={!arrayOfCartItems.length}
         />
-      </View>
+      </Card>
       {arrayOfCartItems.length > 0 && <CartHeaderTitles fromCart />}
       {!arrayOfCartItems.length && (
         <Text style={styles.emptyCart}>The cart is empty!</Text>
@@ -121,13 +122,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: stylesConstants.margin,
     padding: stylesConstants.padding,
-    backgroundColor: colours.white,
-    shadowColor: colours.black,
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 8,
-    elevation: stylesConstants.elevation,
-    borderRadius: stylesConstants.borderRadius,
   },
   summaryText: {
     fontFamily: 'open-sans-bold',

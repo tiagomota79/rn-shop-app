@@ -3,6 +3,7 @@ import { View, Text, Button, StyleSheet, Platform } from 'react-native';
 
 // Components
 import CartItem from './CartItem';
+import Card from '../UI/Card';
 
 // Constants
 import colours from '../../constants/colours';
@@ -16,7 +17,7 @@ const OrderItem = ({ orderData }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
-    <View style={styles.container}>
+    <Card style={styles.container}>
       <View style={styles.orderSummary}>
         <Text style={styles.totalAmount}>
           {Platform.OS === 'ios'
@@ -40,19 +41,12 @@ const OrderItem = ({ orderData }) => {
           </View>
         </View>
       )}
-    </View>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colours.white,
-    shadowColor: colours.black,
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 8,
-    elevation: stylesConstants.elevation,
-    borderRadius: stylesConstants.borderRadius,
     margin: stylesConstants.margin,
     padding: stylesConstants.padding,
     alignItems: 'center',
