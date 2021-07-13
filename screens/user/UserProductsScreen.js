@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Platform } from 'react-native';
+import { FlatList, Platform, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -11,17 +11,28 @@ import CustomHeaderButton from '../../components/UI/HeaderButton';
 import { deleteProduct, selectUserProducts } from '../../slices/productsSlice';
 import { deleteFromCart } from '../../slices/cartSlice';
 
-const UserProductsScreen = () => {
+const UserProductsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const userProducts = useSelector(selectUserProducts);
 
   const handleEditProduct = (productData) => {
-    console.log(`Enter edition mode for ${productData.title}`);
+    navigation.navigate('EditProduct', { productData });
+  };
+
+  const deleteAction = (productData) => {
+    dispatch(deleteProduct(productData.id));
+    dispatch(deleteFromCart(productData.id));
   };
 
   const handleDeleteProduct = (productData) => {
-    dispatch(deleteProduct(productData.id));
-    dispatch(deleteFromCart(productData.id));
+    Alert.alert('Are you sure?', `Delete ${productData.title}`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => deleteAction(productData),
+      },
+    ]);
   };
 
   return (
@@ -51,6 +62,17 @@ UserProductsScreen.navigationOptions = (navigationData) => {
           iconName={Platform.OS === 'ios' ? 'ios-menu' : 'md-menu'}
           onPress={() => {
             navigationData.navigation.toggleDrawer();
+          }}
+        />
+      </HeaderButtons>
+    ),
+    headerRight: () => (
+      <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+        <Item
+          title='Add Product'
+          iconName={Platform.OS === 'ios' ? 'ios-create' : 'md-create'}
+          onPress={() => {
+            navigationData.navigation.navigate('EditProduct');
           }}
         />
       </HeaderButtons>
