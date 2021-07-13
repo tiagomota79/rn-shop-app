@@ -16,8 +16,16 @@ import stylesConstants from '../../constants/stylesConstants';
 
 // Utils
 import { formatPrice } from '../../utils';
+import ProductItemButtons from '../UI/ProductItemButtons';
 
-const ProductItem = ({ productData, onViewDetails, onAddToCart }) => {
+const ProductItem = ({
+  productData,
+  onSelectCard,
+  leftTitle,
+  onLeftButton,
+  rightTitle,
+  onRightButton,
+}) => {
   let TouchableElement = TouchableOpacity;
 
   if (Platform.OS === 'android') TouchableElement = TouchableNativeFeedback;
@@ -25,7 +33,7 @@ const ProductItem = ({ productData, onViewDetails, onAddToCart }) => {
   return (
     <View style={styles.container}>
       <View style={styles.android}>
-        <TouchableElement onPress={onViewDetails} useForeground>
+        <TouchableElement onPress={onSelectCard} useForeground>
           <View>
             <Image
               style={styles.image}
@@ -39,18 +47,12 @@ const ProductItem = ({ productData, onViewDetails, onAddToCart }) => {
                   : `$${productData.price}`}
               </Text>
             </View>
-            <View style={styles.buttonContainer}>
-              <Button
-                title='View Details'
-                onPress={onViewDetails}
-                color={colours.primary}
-              />
-              <Button
-                title='Add To Cart'
-                onPress={onAddToCart}
-                color={colours.primary}
-              />
-            </View>
+            <ProductItemButtons
+              leftTitle={leftTitle}
+              onLeftButton={onLeftButton}
+              rightTitle={rightTitle}
+              onRightButton={onRightButton}
+            />
           </View>
         </TouchableElement>
       </View>
@@ -92,13 +94,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colours.priceColour,
     fontFamily: 'open-sans',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: '25%',
-    paddingHorizontal: stylesConstants.padding * 2,
   },
 });
 
