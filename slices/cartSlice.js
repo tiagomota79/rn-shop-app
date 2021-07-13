@@ -71,10 +71,28 @@ export const cartSlice = createSlice({
     clearCart: () => {
       return initialState;
     },
+    deleteFromCart: (state, action) => {
+      const productId = action.payload;
+
+      if (!state.items[productId]) {
+        return state;
+      }
+
+      const updatedItems = { ...state.items };
+      const itemTotal = state.items[productId].sum;
+      delete updatedItems[productId];
+
+      return {
+        ...state,
+        items: updatedItems,
+        totalAmount: state.totalAmount - itemTotal,
+      };
+    },
   },
 });
 
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, clearCart, deleteFromCart } =
+  cartSlice.actions;
 
 export const selectItemsInCart = (state) => state.cart.items;
 export const selectTotalAmount = (state) => state.cart.totalAmount;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, Platform } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 // Components
@@ -8,9 +8,11 @@ import ProductItem from '../../components/shop/ProductItem';
 import CustomHeaderButton from '../../components/UI/HeaderButton';
 
 // Slices
-import { selectUserProducts } from '../../slices/productsSlice';
+import { deleteProduct, selectUserProducts } from '../../slices/productsSlice';
+import { deleteFromCart } from '../../slices/cartSlice';
 
 const UserProductsScreen = () => {
+  const dispatch = useDispatch();
   const userProducts = useSelector(selectUserProducts);
 
   const handleEditProduct = (productData) => {
@@ -18,7 +20,8 @@ const UserProductsScreen = () => {
   };
 
   const handleDeleteProduct = (productData) => {
-    console.log(`Deleted ${productData.title}`);
+    dispatch(deleteProduct(productData.id));
+    dispatch(deleteFromCart(productData.id));
   };
 
   return (
@@ -27,6 +30,7 @@ const UserProductsScreen = () => {
       renderItem={(itemData) => (
         <ProductItem
           productData={itemData.item}
+          onSelectCard={() => handleEditProduct(itemData.item)}
           leftTitle='Edit Product'
           onLeftButton={() => handleEditProduct(itemData.item)}
           rightTitle='Delete Product'
