@@ -28,7 +28,7 @@ import {
 import { addOrder } from '../../slices/orderSlice';
 
 // Utils
-import { formatPrice } from '../../utils';
+import { formatPrice, objectOfCartsToArray } from '../../utils';
 
 const CartScreen = () => {
   const dispatch = useDispatch();
@@ -36,23 +36,7 @@ const CartScreen = () => {
   const totalAmount = useSelector(selectTotalAmount);
   const cartItems = useSelector(selectItemsInCart);
 
-  const objectOfCartsToArray = () => {
-    const arrayOfCartItems = [];
-
-    for (const key in cartItems) {
-      arrayOfCartItems.push({
-        id: key,
-        productTitle: cartItems[key].productTitle,
-        productPrice: cartItems[key].productPrice,
-        quantity: cartItems[key].quantity,
-        sum: cartItems[key].sum,
-      });
-    }
-
-    return arrayOfCartItems.sort((a, b) => (a.id > b.id ? 1 : -1));
-  };
-
-  const arrayOfCartItems = objectOfCartsToArray();
+  const arrayOfCartItems = objectOfCartsToArray(cartItems);
 
   const handleRemoveFromCart = (item) => {
     dispatch(removeFromCart(item.id));

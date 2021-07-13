@@ -22,39 +22,10 @@ import stylesConstants from '../../constants/stylesConstants';
 // Slices
 import { createProduct, updateProduct } from '../../slices/productsSlice';
 
-const formReducer = (state, action) => {
-  if (action.type === 'FORM_INPUT_UPDATE') {
-    const updatedValues = {
-      ...state.inputValue,
-      [action.input]: action.value,
-    };
-
-    const updatedValidities = {
-      ...state.inputValidities,
-      [action.input]: action.isValid,
-    };
-
-    let formIsValid = true;
-    for (const key in updatedValidities) {
-      formIsValid = formIsValid && updatedValidities[key];
-    }
-
-    return {
-      ...state,
-      inputValue: updatedValues,
-      inputValidities: updatedValidities,
-      formIsValid,
-    };
-  }
-  return state;
-};
+// Utils
+import { formReducer } from '../../utils';
 
 const EditProductScreen = ({ navigation }) => {
-  // const [title, setTitle] = useState('');
-  // const [imageUrl, setImageUrl] = useState('');
-  // const [price, setPrice] = useState();
-  // const [description, setDescription] = useState('');
-
   const dispatch = useDispatch();
 
   const productData = navigation.getParam('productData');
