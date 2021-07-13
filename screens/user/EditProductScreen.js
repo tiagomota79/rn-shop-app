@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useCallback, useReducer } from 'react';
+import React, { useEffect, useCallback, useReducer } from 'react';
 import {
   ScrollView,
   View,
-  Text,
-  TextInput,
   StyleSheet,
   Platform,
   Alert,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { useDispatch } from 'react-redux';
@@ -94,36 +93,42 @@ const EditProductScreen = ({ navigation }) => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.form}>
-        <UserInput
-          label='Title'
-          value={formState.inputValue.title}
-          onChangeText={(text) => textChangeHandler('title', text)}
-          autoCapitalize='words'
-        />
-        <UserInput
-          label='Image URL'
-          value={formState.inputValue.imageUrl}
-          onChangeText={(text) => textChangeHandler('imageUrl', text)}
-        />
-        {!productData && (
+    <KeyboardAvoidingView
+      behavior='padding'
+      keyboardVerticalOffset={100}
+      style={{ flex: 1 }}
+    >
+      <ScrollView>
+        <View style={styles.form}>
           <UserInput
-            label='Price'
-            value={formState.inputValue.price}
-            onChangeText={(text) => textChangeHandler('price', text)}
-            keyboardType='decimal-pad'
+            label='Title'
+            value={formState.inputValue.title}
+            onChangeText={(text) => textChangeHandler('title', text)}
+            autoCapitalize='words'
           />
-        )}
-        <UserInput
-          label='Description'
-          value={formState.inputValue.description}
-          onChangeText={(text) => textChangeHandler('description', text)}
-          autoCapitalize='sentences'
-          multiline={true}
-        />
-      </View>
-    </ScrollView>
+          <UserInput
+            label='Image URL'
+            value={formState.inputValue.imageUrl}
+            onChangeText={(text) => textChangeHandler('imageUrl', text)}
+          />
+          {!productData && (
+            <UserInput
+              label='Price'
+              value={formState.inputValue.price}
+              onChangeText={(text) => textChangeHandler('price', text)}
+              keyboardType='decimal-pad'
+            />
+          )}
+          <UserInput
+            label='Description'
+            value={formState.inputValue.description}
+            onChangeText={(text) => textChangeHandler('description', text)}
+            autoCapitalize='sentences'
+            multiline={true}
+          />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
