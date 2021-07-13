@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useReducer } from 'react';
 import {
   ScrollView,
   View,
@@ -6,12 +6,14 @@ import {
   TextInput,
   StyleSheet,
   Platform,
+  Alert,
 } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { useDispatch } from 'react-redux';
 
-// Constants
+// Components
 import CustomHeaderButton from '../../components/UI/HeaderButton';
+import UserInput from '../../components/UI/UserInput';
 
 // Constants
 import colours from '../../constants/colours';
@@ -20,89 +22,135 @@ import stylesConstants from '../../constants/stylesConstants';
 // Slices
 import { createProduct, updateProduct } from '../../slices/productsSlice';
 
+const formReducer = (state, action) => {
+  if (action.type === 'FORM_INPUT_UPDATE') {
+    const updatedValues = {
+      ...state.inputValue,
+      [action.input]: action.value,
+    };
+
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid,
+    };
+
+    let formIsValid = true;
+    for (const key in updatedValidities) {
+      formIsValid = formIsValid && updatedValidities[key];
+    }
+
+    return {
+      ...state,
+      inputValue: updatedValues,
+      inputValidities: updatedValidities,
+      formIsValid,
+    };
+  }
+  return state;
+};
+
 const EditProductScreen = ({ navigation }) => {
-  const [title, setTitle] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [price, setPrice] = useState();
-  const [description, setDescription] = useState('');
+  // const [title, setTitle] = useState('');
+  // const [imageUrl, setImageUrl] = useState('');
+  // const [price, setPrice] = useState();
+  // const [description, setDescription] = useState('');
 
   const dispatch = useDispatch();
 
   const productData = navigation.getParam('productData');
 
-  useEffect(() => {
-    if (productData) {
-      setTitle(productData.title);
-      setImageUrl(productData.imageUrl);
-      setDescription(productData.description);
-    }
-  }, [productData]);
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValue: {
+      title: productData ? productData.title : '',
+      imageUrl: productData ? productData.imageUrl : '',
+      price: '',
+      description: productData ? productData.description : '',
+    },
+    inputValidities: {
+      title: productData ? true : false,
+      imageUrl: productData ? true : false,
+      price: productData ? true : false,
+      description: productData ? true : false,
+    },
+    formIsValid: productData ? true : false,
+  });
 
   const handleSubmit = useCallback(() => {
+    if (!formState.formIsValid) {
+      Alert.alert('Wrong input!', 'Please check for errors in the form.', [
+        { text: 'OK' },
+      ]);
+      return;
+    }
+
     if (productData) {
       dispatch(
         updateProduct({
           id: productData.id,
-          title,
-          imageUrl,
-          description,
+          title: formState.inputValue.title,
+          imageUrl: formState.inputValue.imageUrl,
+          description: formState.inputValue.description,
         })
       );
     } else {
       dispatch(
         createProduct({
-          title,
-          imageUrl,
-          price,
-          description,
+          title: formState.inputValue.title,
+          imageUrl: formState.inputValue.imageUrl,
+          price: +formState.inputValue.price,
+          description: formState.inputValue.description,
         })
       );
     }
     navigation.goBack();
-  }, [productData, title, imageUrl, price, description]);
+  }, [dispatch, productData, formState]);
 
   useEffect(() => {
     navigation.setParams({ submit: handleSubmit });
   }, [handleSubmit]);
 
+  const textChangeHandler = (input, text) => {
+    let isValid = false;
+    if (text.trim().length > 0) {
+      isValid = true;
+    }
+    dispatchFormState({
+      type: 'FORM_INPUT_UPDATE',
+      value: text,
+      isValid,
+      input,
+    });
+  };
+
   return (
     <ScrollView>
       <View style={styles.form}>
-        <View style={styles.formControl}>
-          <Text style={styles.label}>Title</Text>
-          <TextInput
-            style={styles.input}
-            value={title}
-            onChangeText={(text) => setTitle(text)}
-          />
-        </View>
-        <View style={styles.formControl}>
-          <Text style={styles.label}>Image URL</Text>
-          <TextInput
-            style={styles.input}
-            value={imageUrl}
-            onChangeText={(text) => setImageUrl(text)}
-          />
-        </View>
+        <UserInput
+          label='Title'
+          value={formState.inputValue.title}
+          onChangeText={(text) => textChangeHandler('title', text)}
+          autoCapitalize='words'
+        />
+        <UserInput
+          label='Image URL'
+          value={formState.inputValue.imageUrl}
+          onChangeText={(text) => textChangeHandler('imageUrl', text)}
+        />
         {!productData && (
-          <View style={styles.formControl}>
-            <Text style={styles.label}>Price</Text>
-            <TextInput
-              style={styles.input}
-              value={price}
-              onChangeText={(text) => setPrice(text)}
-            />
-          </View>
-        )}
-        <View style={styles.formControl}>
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={styles.input}
-            value={description}
-            onChangeText={(text) => setDescription(text)}
-            multiline={true}
+          <UserInput
+            label='Price'
+            value={formState.inputValue.price}
+            onChangeText={(text) => textChangeHandler('price', text)}
+            keyboardType='decimal-pad'
           />
-        </View>
+        )}
+        <UserInput
+          label='Description'
+          value={formState.inputValue.description}
+          onChangeText={(text) => textChangeHandler('description', text)}
+          autoCapitalize='sentences'
+          multiline={true}
+        />
       </View>
     </ScrollView>
   );
