@@ -5,10 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Button,
   TouchableNativeFeedback,
   Platform,
 } from 'react-native';
+
+// Components
+import Card from '../UI/Card';
 
 // Constants
 import colours from '../../constants/colours';
@@ -31,7 +33,7 @@ const ProductItem = ({
   if (Platform.OS === 'android') TouchableElement = TouchableNativeFeedback;
 
   return (
-    <View style={styles.container}>
+    <Card style={styles.container}>
       <View style={styles.android}>
         <TouchableElement onPress={onSelectCard} useForeground>
           <View>
@@ -56,19 +58,12 @@ const ProductItem = ({
           </View>
         </TouchableElement>
       </View>
-    </View>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colours.white,
-    shadowColor: colours.black,
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 8,
-    elevation: stylesConstants.elevation,
-    borderRadius: stylesConstants.borderRadius,
     height: 300,
     margin: stylesConstants.margin,
   },
