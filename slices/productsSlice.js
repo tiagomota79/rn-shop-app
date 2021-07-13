@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import PRODUCTS from '../data/dummy-data';
+import Product from '../model/product';
 
 const initialState = {
   availableProducts: PRODUCTS,
@@ -24,10 +25,63 @@ export const productsSlice = createSlice({
         ),
       };
     },
+    createProduct: (state, action) => {
+      const { title, imageUrl, price, description } = action.payload;
+
+      const newProduct = new Product(
+        new Date().toString(),
+        'u1',
+        title,
+        imageUrl,
+        description,
+        price
+      );
+
+      return {
+        ...state,
+        availableProducts: state.availableProducts.concat(newProduct),
+        userProducts: state.userProducts.concat(newProduct),
+      };
+    },
+    updateProduct: (state, action) => {
+      const { id, title, imageUrl, description } = action.payload;
+
+      const userProductIndex = state.userProducts.findIndex(
+        (product) => product.id === id
+      );
+
+      const availableProductIndex = state.availableProducts.findIndex(
+        (product) => product.id === id
+      );
+
+      const productToUpdate = state.userProducts[userProductIndex];
+
+      const updatedProduct = new Product(
+        id,
+        productToUpdate.ownerId,
+        title,
+        imageUrl,
+        description,
+        productToUpdate.price
+      );
+
+      const updatedUserProducts = [...state.userProducts];
+      updatedUserProducts[userProductIndex] = updatedProduct;
+
+      const updatedAvailableProducts = [...state.availableProducts];
+      updatedAvailableProducts[availableProductIndex] = updatedProduct;
+
+      return {
+        ...state,
+        availableProducts: updatedAvailableProducts,
+        userProducts: updatedUserProducts,
+      };
+    },
   },
 });
 
-export const { deleteProduct } = productsSlice.actions;
+export const { deleteProduct, createProduct, updateProduct } =
+  productsSlice.actions;
 
 export const selectProducts = (state) => state.products.availableProducts;
 export const selectUserProducts = (state) => state.products.userProducts;
