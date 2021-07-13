@@ -29,8 +29,11 @@ const ProductOverviewScreen = ({ navigation }) => {
   const handleRender = (itemData) => (
     <ProductItem
       productData={itemData.item}
-      onViewDetails={() => handleViewDetails(itemData)}
-      onAddToCart={() => handleAddToCart(itemData)}
+      onSelectCard={() => handleViewDetails(itemData)}
+      leftTitle='View Details'
+      onLeftButton={() => handleViewDetails(itemData)}
+      rightTitle='Add to Cart'
+      onRightButton={() => handleAddToCart(itemData)}
     />
   );
   return <FlatList data={products} renderItem={handleRender} />;
