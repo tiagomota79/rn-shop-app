@@ -1,5 +1,11 @@
-import React, { useEffect } from 'react';
-import { FlatList, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  FlatList,
+  Platform,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -11,12 +17,23 @@ import CustomHeaderButton from '../../components/UI/HeaderButton';
 import { selectProducts, setProducts } from '../../slices/productsSlice';
 import { addToCart } from '../../slices/cartSlice';
 
+// Constants
+import colours from '../../constants/colours';
+
 const ProductOverviewScreen = ({ navigation }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const dispatch = useDispatch();
   const products = useSelector(selectProducts);
 
   useEffect(() => {
-    dispatch(setProducts());
+    const loadProducts = async () => {
+      setIsLoading(true);
+      await dispatch(setProducts());
+      setIsLoading(false);
+    };
+
+    loadProducts();
   }, [dispatch]);
 
   const handleViewDetails = (itemData) => {
@@ -40,6 +57,23 @@ const ProductOverviewScreen = ({ navigation }) => {
       onRightButton={() => handleAddToCart(itemData)}
     />
   );
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size='large' color={colours.primary} />
+      </View>
+    );
+  }
+
+  if (!isLoading && products.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>No products found.</Text>
+      </View>
+    );
+  }
+
   return <FlatList data={products} renderItem={handleRender} />;
 };
 
@@ -70,5 +104,17 @@ ProductOverviewScreen.navigationOptions = (navigationData) => {
     ),
   };
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colours.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontFamily: 'open-sans',
+  },
+});
 
 export default ProductOverviewScreen;
