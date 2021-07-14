@@ -1,4 +1,5 @@
 import format from 'date-fns/format';
+import Product from '../model/product';
 
 export const formatPrice = (string) => {
   return string.toLocaleString('en-CA', {
@@ -52,4 +53,23 @@ export const objectOfCartsToArray = (cartItems) => {
   }
 
   return arrayOfCartItems.sort((a, b) => (a.id > b.id ? 1 : -1));
+};
+
+export const firebaseObjectToArray = (object) => {
+  const array = [];
+
+  for (const key in object) {
+    array.push(
+      new Product(
+        key,
+        'u1',
+        object[key].title,
+        object[key].imageUrl,
+        object[key].description,
+        object[key].price
+      )
+    );
+  }
+
+  return array;
 };
