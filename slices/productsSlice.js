@@ -49,7 +49,61 @@ export const createProduct = createAsyncThunk(
         productToCreate
       );
 
-      console.log('Response id', response.data.name);
+      if (response.status === 200) {
+        const id = response.data.name;
+        dispatch(
+          createProductAction({
+            ...productToCreate,
+            id,
+          })
+        );
+      }
+    } catch (error) {
+      const errorText = error.response.data;
+      console.error(errorText);
+    }
+  }
+);
+
+export const updateProduct = createAsyncThunk(
+  'patch/product',
+  async (params, { dispatch, rejectWithValue }) => {
+    const id = params.id;
+
+    const productToUpdate = {
+      title: params.title,
+      imageUrl: params.imageUrl,
+      description: params.description,
+    };
+
+    try {
+      const response = await axios.patch(
+        `${API_URL}products/${id}.json`,
+        productToUpdate
+      );
+
+      if (response.status === 200) {
+        const { title, description, imageUrl } = await response.data;
+        dispatch(updateProductAction({ id, title, description, imageUrl }));
+      }
+    } catch (error) {
+      const errorText = error.response.data;
+      console.error(errorText);
+    }
+  }
+);
+
+export const deleteProduct = createAsyncThunk(
+  'delete/product',
+  async (params, { dispatch, rejectWithValue }) => {
+    const id = params;
+
+    try {
+      const response = await axios.delete(`${API_URL}products/${id}.json`);
+
+      if (response.status === 200) {
+        dispatch(deleteProductAction(id));
+      }
     } catch (error) {
       const errorText = error.response.data;
       console.error(errorText);
@@ -83,10 +137,10 @@ export const productsSlice = createSlice({
       };
     },
     createProductAction: (state, action) => {
-      const { title, imageUrl, price, description } = action.payload;
+      const { id, title, imageUrl, price, description } = action.payload;
 
       const newProduct = new Product(
-        new Date().toString(),
+        id,
         'u1',
         title,
         imageUrl,
