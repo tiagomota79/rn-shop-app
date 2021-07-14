@@ -10,7 +10,7 @@ import colours from '../../constants/colours';
 import stylesConstants from '../../constants/stylesConstants';
 
 // Utils
-import { formatPrice } from '../../utils';
+import { formatDate, formatPrice } from '../../utils';
 import CartHeaderTitles from './CartHeaderTitles';
 
 const OrderItem = ({ orderData }) => {
@@ -24,7 +24,7 @@ const OrderItem = ({ orderData }) => {
             ? formatPrice(orderData.totalAmount)
             : `$${orderData.totalAmount.toFixed(2)}`}
         </Text>
-        <Text style={styles.date}>{orderData.readableDate}</Text>
+        <Text style={styles.date}>{formatDate(new Date(orderData.date))}</Text>
       </View>
       <Button
         title={showDetails ? 'Hide details' : 'Show Details'}
