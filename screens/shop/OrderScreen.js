@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FlatList, Text, Platform } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 // Components
@@ -8,10 +8,16 @@ import CustomHeaderButton from '../../components/UI/HeaderButton';
 import OrderItem from '../../components/shop/OrderItem';
 
 // Slices
-import { selectOrders } from '../../slices/orderSlice';
+import { selectOrders, setOrders } from '../../slices/orderSlice';
 
 const OrderScreen = () => {
+  const dispatch = useDispatch();
+
   const orders = useSelector(selectOrders);
+
+  useEffect(() => {
+    dispatch(setOrders());
+  }, [dispatch]);
 
   return (
     <FlatList
