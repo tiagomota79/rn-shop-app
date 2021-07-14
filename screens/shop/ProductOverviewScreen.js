@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, FlatList, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import { FlatList, Platform } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -8,12 +8,16 @@ import ProductItem from '../../components/shop/ProductItem';
 import CustomHeaderButton from '../../components/UI/HeaderButton';
 
 // Slices
-import { selectProducts } from '../../slices/productsSlice';
+import { selectProducts, setProducts } from '../../slices/productsSlice';
 import { addToCart } from '../../slices/cartSlice';
 
 const ProductOverviewScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const products = useSelector(selectProducts);
+
+  useEffect(() => {
+    dispatch(setProducts());
+  }, [dispatch]);
 
   const handleViewDetails = (itemData) => {
     navigation.navigate({
@@ -38,15 +42,6 @@ const ProductOverviewScreen = ({ navigation }) => {
   );
   return <FlatList data={products} renderItem={handleRender} />;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 ProductOverviewScreen.navigationOptions = (navigationData) => {
   return {
