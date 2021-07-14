@@ -28,6 +28,7 @@ export const setProducts = createAsyncThunk(
     } catch (error) {
       const errorText = error.response.data;
       console.error(errorText);
+      throw error;
     }
   }
 );
