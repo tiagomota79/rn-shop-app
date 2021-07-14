@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
+  Text,
+  Button,
   FlatList,
   Platform,
   ActivityIndicator,
@@ -22,19 +24,36 @@ import colours from '../../constants/colours';
 
 const ProductOverviewScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
 
   const dispatch = useDispatch();
   const products = useSelector(selectProducts);
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      setIsLoading(true);
+  const loadProducts = useCallback(async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
       await dispatch(setProducts());
-      setIsLoading(false);
-    };
+    } catch (error) {
+      setError(error.response.data);
+    }
+    setIsLoading(false);
+  }, [dispatch, setIsLoading, setError]);
 
+  useEffect(() => {
+    const willFocusSubscription = navigation.addListener(
+      'willFocus',
+      loadProducts
+    );
+
+    return () => {
+      willFocusSubscription.remove();
+    };
+  }, [loadProducts]);
+
+  useEffect(() => {
     loadProducts();
-  }, [dispatch]);
+  }, [loadProducts]);
 
   const handleViewDetails = (itemData) => {
     navigation.navigate({
@@ -57,6 +76,15 @@ const ProductOverviewScreen = ({ navigation }) => {
       onRightButton={() => handleAddToCart(itemData)}
     />
   );
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>An error ocurred!</Text>
+        <Button title='Reload' onPress={loadProducts} color={colours.primary} />
+      </View>
+    );
+  }
 
   if (isLoading) {
     return (
