@@ -7,10 +7,6 @@ import { firebaseObjectToArray } from '../utils';
 
 const API_URL = 'https://rn-complete-guide-8706e-default-rtdb.firebaseio.com/';
 
-const headers = {
-  'Content-Type': 'application/json',
-};
-
 const initialState = {
   availableProducts: PRODUCTS,
   userProducts: PRODUCTS.filter((product) => product.ownerId === 'u1'),
@@ -61,6 +57,7 @@ export const createProduct = createAsyncThunk(
     } catch (error) {
       const errorText = error.response.data;
       console.error(errorText);
+      throw error;
     }
   }
 );
@@ -89,6 +86,7 @@ export const updateProduct = createAsyncThunk(
     } catch (error) {
       const errorText = error.response.data;
       console.error(errorText);
+      throw error;
     }
   }
 );
