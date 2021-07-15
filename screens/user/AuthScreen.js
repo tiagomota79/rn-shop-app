@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useReducer, useCallback } from 'react';
 import {
   ScrollView,
   View,
@@ -6,22 +6,107 @@ import {
   Button,
   KeyboardAvoidingView,
   StyleSheet,
+  Alert,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
+import validator from 'validator';
 
 // Components
 import UserInput from '../../components/UI/UserInput';
 import Card from '../../components/UI/Card';
-import CardButtons from '../../components/UI/CardButtons';
 
 // Constants
 import colours from '../../constants/colours';
 import stylesConstants from '../../constants/stylesConstants';
 
-const AuthScreen = () => {
-  const signUpHandler = () => {};
+// Slice
+import { selectAuthState, signup } from '../../slices/authSlice';
 
-  const loginHandler = () => {};
+// Utils
+import { formReducer } from '../../utils';
+
+export const modes = {
+  LOGIN: 'Login',
+  SIGNUP: 'Sign Up',
+};
+
+const AuthScreen = () => {
+  const [mode, setMode] = useState(modes.LOGIN);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidPassword, setIsValidPassword] = useState(true);
+
+  const dispatch = useDispatch();
+
+  const authState = useSelector(selectAuthState);
+
+  if (authState.email) {
+    console.log('authState', authState);
+  }
+
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValue: {
+      email: '',
+      password: '',
+    },
+    inputValidities: {
+      email: false,
+      password: false,
+    },
+    formIsValid: false,
+  });
+
+  const textChangeHandler = useCallback(
+    (input, text) => {
+      let isValid = false;
+      if (text.trim().length > 0) {
+        isValid = true;
+      }
+      dispatchFormState({
+        type: 'FORM_INPUT_UPDATE',
+        value: text,
+        isValid,
+        input,
+      });
+    },
+    [dispatchFormState]
+  );
+
+  const handleSignup = () => {
+    if (isValidPassword && isValidEmail) {
+      const { email, password } = formState.inputValue;
+
+      dispatch(signup({ email, password }));
+      console.log('Sign Up dispatched', { email, password });
+      Alert.alert('You are all set!', 'Enter your credentials to login now', [
+        { text: 'OK' },
+      ]);
+      return setMode(modes.LOGIN);
+    }
+
+    return Alert.alert('Errors on form', 'Please check your form for errors', [
+      { text: 'OK' },
+    ]);
+  };
+
+  const handleLogin = () => {};
+
+  const handleSwitchMode = () => {
+    mode === modes.LOGIN ? setMode(modes.SIGNUP) : setMode(modes.LOGIN);
+    textChangeHandler('email', '');
+    textChangeHandler('password', '');
+  };
+
+  const handleEndEditingPassword = () => {
+    if (mode === modes.SIGNUP) {
+      setIsValidPassword(
+        validator.isLength(formState.inputValue.password, {
+          min: 6,
+          max: undefined,
+        })
+      );
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -35,34 +120,58 @@ const AuthScreen = () => {
       >
         <Card style={styles.container}>
           <ScrollView>
+            <Text style={styles.title}>{mode}</Text>
             <UserInput
-              id='email'
               label='E-mail'
               keyboartType='email-address'
               autoCapitalize='none'
-              onChangeText={() => {}}
-              initialValue=''
+              onChangeText={(text) => textChangeHandler('email', text)}
+              value={formState.inputValue.email}
               required
+              onEndEditing={() =>
+                setIsValidEmail(validator.isEmail(formState.inputValue.email))
+              }
             />
+            {!isValidEmail && (
+              <Text style={styles.text}>Please enter a valid email</Text>
+            )}
             <UserInput
-              id='password'
               label='Password'
               keyboartType='default'
               secureTextEntry
               minLength={5}
               autoCapitalize='none'
-              onChangeText={() => {}}
-              initialValue=''
+              onChangeText={(text) => textChangeHandler('password', text)}
+              value={formState.inputValue.password}
               required
+              onEndEditing={handleEndEditingPassword}
             />
-            <CardButtons
-              leftTitle={'Sign Up'}
-              onLeftButton={signUpHandler}
-              leftButtonColour={colours.accent}
-              rightTitle={'Login'}
-              onRightButton={loginHandler}
-              style={styles.buttonsContainer}
-            />
+            {!isValidPassword && (
+              <Text style={styles.text}>
+                Password must be 6 characters or more
+              </Text>
+            )}
+            <View style={styles.buttonsContainer}>
+              <Button
+                title={mode === modes.LOGIN ? modes.LOGIN : 'Sign Up'}
+                onPress={mode === modes.LOGIN ? handleLogin : handleSignup}
+                color={colours.primary}
+              />
+            </View>
+            <Text style={styles.text}>
+              {mode === modes.LOGIN
+                ? `Don't have an account? Sign up!`
+                : `Already have an account? Login!`}
+            </Text>
+            <View style={styles.buttonsContainer}>
+              <Button
+                title={
+                  mode === modes.LOGIN ? 'Switch to Sign Up' : 'Switch to Login'
+                }
+                onPress={handleSwitchMode}
+                color={colours.accent}
+              />
+            </View>
           </ScrollView>
         </Card>
       </LinearGradient>
@@ -94,6 +203,15 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     margin: stylesConstants.margin / 2,
+  },
+  title: {
+    fontFamily: 'open-sans-bold',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  text: {
+    fontFamily: 'open-sans',
+    textAlign: 'center',
   },
 });
 
