@@ -66,23 +66,25 @@ const EditProductScreen = ({ navigation }) => {
     setIsLoading(true);
     setError(null);
 
+    const { title, imageUrl, description, price } = formState.inputValue;
+
     try {
       if (productData) {
         await dispatch(
           updateProduct({
             id: productData.id,
-            title: formState.inputValue.title,
-            imageUrl: formState.inputValue.imageUrl,
-            description: formState.inputValue.description,
+            title,
+            imageUrl,
+            description,
           })
         );
       } else {
         await dispatch(
           createProduct({
-            title: formState.inputValue.title,
-            imageUrl: formState.inputValue.imageUrl,
-            price: +formState.inputValue.price,
-            description: formState.inputValue.description,
+            title,
+            imageUrl,
+            price: +price,
+            description,
           })
         );
       }
