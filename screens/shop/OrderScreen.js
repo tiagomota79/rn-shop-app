@@ -1,5 +1,12 @@
-import React, { useEffect } from 'react';
-import { FlatList, Text, Platform } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  View,
+  FlatList,
+  Text,
+  Platform,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -10,14 +17,50 @@ import OrderItem from '../../components/shop/OrderItem';
 // Slices
 import { selectOrders, setOrders } from '../../slices/orderSlice';
 
-const OrderScreen = () => {
+// Constants
+import colours from '../../constants/colours';
+
+const OrderScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const orders = useSelector(selectOrders);
 
+  const loadOrders = useCallback(async () => {
+    setIsLoading(true);
+    await dispatch(setOrders());
+    setIsLoading(false);
+  }, [setIsLoading, dispatch]);
+
   useEffect(() => {
-    dispatch(setOrders());
-  }, [dispatch]);
+    const willFocusSubscription = navigation.addListener(
+      'willFocus',
+      loadOrders
+    );
+
+    return () => willFocusSubscription.remove();
+  }, [loadOrders]);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size='large' color={colours.primary} />
+      </View>
+    );
+  }
+
+  if (!isLoading && orders.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>You made no orders yet.</Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
@@ -43,5 +86,17 @@ OrderScreen.navigationOptions = (navigationData) => {
     ),
   };
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colours.white,
+  },
+  text: {
+    fontFamily: 'open-sans',
+  },
+});
 
 export default OrderScreen;
