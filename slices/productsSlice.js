@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+import { API_URL } from '@env';
+
 import PRODUCTS from '../data/dummy-data';
 import Product from '../model/product';
 import { firebaseObjectToArray } from '../utils';
-
-const API_URL = 'https://rn-complete-guide-8706e-default-rtdb.firebaseio.com/';
 
 const initialState = {
   availableProducts: PRODUCTS,
