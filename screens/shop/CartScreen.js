@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import CartHeaderTitles from '../../components/shop/CartHeaderTitles';
@@ -33,6 +34,8 @@ import { formatPrice, objectOfCartsToArray } from '../../utils';
 const CartScreen = () => {
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const totalAmount = useSelector(selectTotalAmount);
   const cartItems = useSelector(selectItemsInCart);
 
@@ -42,9 +45,11 @@ const CartScreen = () => {
     dispatch(removeFromCart(item.id));
   };
 
-  const handleOrderNow = () => {
-    dispatch(addOrder({ cartItems: arrayOfCartItems, totalAmount }));
+  const handleOrderNow = async () => {
+    setIsLoading(true);
+    await dispatch(addOrder({ cartItems: arrayOfCartItems, totalAmount }));
     dispatch(clearCart());
+    setIsLoading(false);
   };
 
   return (
@@ -59,12 +64,16 @@ const CartScreen = () => {
               : `$${totalAmount.toFixed(2)}`}
           </Text>
         </Text>
-        <Button
-          title='Order now'
-          onPress={handleOrderNow}
-          color={colours.accent}
-          disabled={!arrayOfCartItems.length}
-        />
+        {isLoading ? (
+          <ActivityIndicator size='small' color={colours.primary} />
+        ) : (
+          <Button
+            title='Order now'
+            onPress={handleOrderNow}
+            color={colours.accent}
+            disabled={!arrayOfCartItems.length}
+          />
+        )}
       </Card>
       {arrayOfCartItems.length > 0 && <CartHeaderTitles fromCart />}
       {!arrayOfCartItems.length && (
