@@ -5,23 +5,26 @@ import { View, Button, StyleSheet } from 'react-native';
 import colours from '../../constants/colours';
 import stylesConstants from '../../constants/stylesConstants';
 
-const ProductItemButtons = ({
+const CardButtons = ({
   leftTitle,
   onLeftButton,
+  leftButtonColour,
   rightTitle,
   onRightButton,
+  rightButtonColour,
+  style,
 }) => {
   return (
-    <View style={styles.buttonContainer}>
+    <View style={{ ...styles.buttonContainer, ...style }}>
       <Button
         title={leftTitle}
         onPress={onLeftButton}
-        color={colours.primary}
+        color={leftButtonColour || colours.primary}
       />
       <Button
         title={rightTitle}
         onPress={onRightButton}
-        color={colours.primary}
+        color={rightButtonColour || colours.primary}
       />
     </View>
   );
@@ -37,4 +40,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductItemButtons;
+export default CardButtons;
