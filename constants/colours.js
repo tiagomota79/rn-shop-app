@@ -6,4 +6,6 @@ export default {
   priceColour: '#888',
   red: '#d60000',
   lightGrey: '#dedede',
+  ultraLightPink: '#ffedff',
+  lightPink: '#ffe3ff',
 };
