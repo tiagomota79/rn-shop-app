@@ -16,10 +16,7 @@ export const setOrders = createAsyncThunk(
     try {
       const response = await axios.get(`${API_URL}orders/u1.json`);
 
-      console.log('setOrders response', response.data);
       const ordersToSet = firebaseOrderObjectToArray(response.data);
-
-      console.log('Array of orders', ordersToSet);
 
       if (response.status === 200) {
         dispatch(setOrdersAction(ordersToSet));
@@ -35,7 +32,6 @@ export const setOrders = createAsyncThunk(
 export const addOrder = createAsyncThunk(
   'post/order',
   async (params, { dispatch }) => {
-    console.log('Got into addOrder', params);
     const orderToCreate = {
       cartItems: params.cartItems,
       totalAmount: params.totalAmount,
@@ -43,12 +39,7 @@ export const addOrder = createAsyncThunk(
     };
 
     try {
-      const response = await axios.post(
-        `${API_URL}orders/u1.json`,
-        orderToCreate
-      );
-
-      console.log('addOrder response', response.data);
+      await axios.post(`${API_URL}orders/u1.json`, orderToCreate);
     } catch (error) {
       const errorText = error.response.data;
       console.error(errorText);
@@ -62,7 +53,6 @@ export const orderSlice = createSlice({
   initialState,
   reducers: {
     setOrdersAction: (state, action) => {
-      console.log('Orders will be set');
       return {
         orders: action.payload,
       };
