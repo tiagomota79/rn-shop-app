@@ -102,7 +102,14 @@ const ProductOverviewScreen = ({ navigation }) => {
     );
   }
 
-  return <FlatList data={products} renderItem={handleRender} />;
+  return (
+    <FlatList
+      data={products}
+      renderItem={handleRender}
+      onRefresh={loadProducts}
+      refreshing={isLoading}
+    />
+  );
 };
 
 ProductOverviewScreen.navigationOptions = (navigationData) => {
