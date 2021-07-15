@@ -18,7 +18,7 @@ import stylesConstants from '../../constants/stylesConstants';
 
 // Utils
 import { formatPrice } from '../../utils';
-import ProductItemButtons from '../UI/ProductItemButtons';
+import CardButtons from '../UI/CardButtons';
 
 const ProductItem = ({
   productData,
@@ -49,7 +49,7 @@ const ProductItem = ({
                   : `$${productData.price}`}
               </Text>
             </View>
-            <ProductItemButtons
+            <CardButtons
               leftTitle={leftTitle}
               onLeftButton={onLeftButton}
               rightTitle={rightTitle}
