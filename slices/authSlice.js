@@ -82,15 +82,15 @@ export const login = createAsyncThunk(
 
       if (response.status === 200) {
         const responseData = response.data;
+        const expirationTime = parseInt(responseData.expiresIn) * 1000;
+        const expirationDate = new Date(new Date().getTime() + expirationTime);
+
         dispatch(loginAction(responseData));
-        const expirationTime = new Date(
-          new Date().getTime() + parseInt(responseData.expiresIn) * 1000
-        );
         saveDataToStorage(
           responseData.idToken,
           responseData.localId,
           responseData.refreshToken,
-          expirationTime,
+          expirationDate,
           responseData.localId,
           responseData.registered,
           responseData.displayName
@@ -151,6 +151,10 @@ export const authSlice = createSlice({
         loginOK: true,
       };
     },
+    logoutAction: () => {
+      AsyncStorage.removeItem('userData');
+      return initialState;
+    },
     errorAction: (state, action) => {
       return {
         ...state,
@@ -160,7 +164,8 @@ export const authSlice = createSlice({
   },
 });
 
-export const { signupAction, loginAction, errorAction } = authSlice.actions;
+export const { signupAction, loginAction, logoutAction, errorAction } =
+  authSlice.actions;
 
 export const selectAuthState = (state) => state.auth;
 

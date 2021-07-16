@@ -18,6 +18,9 @@ import EditProductScreen from '../screens/user/EditProductScreen';
 import AuthScreen from '../screens/user/AuthScreen';
 import StartUpScreen from '../screens/StartUpScreen';
 
+// Components
+import LogoutButton from '../components/UI/LogoutButton';
+
 const defaultNavOptions = {
   headerStyle: {
     backgroundColor: Platform.OS === 'ios' ? colours.white : colours.primary,
@@ -113,6 +116,7 @@ const ShopNavigator = createDrawerNavigator(
     contentOptions: {
       activeTintColor: colours.primary,
     },
+    contentComponent: (props) => <LogoutButton {...props} />,
     hideStatusBar: true,
   }
 );
