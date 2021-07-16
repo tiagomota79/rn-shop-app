@@ -8,4 +8,5 @@ export default {
   lightGrey: '#dedede',
   ultraLightPink: '#ffedff',
   lightPink: '#ffe3ff',
+  lightAccent: '#ffeaab',
 };

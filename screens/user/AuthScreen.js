@@ -118,7 +118,13 @@ const AuthScreen = () => {
         colors={[colours.ultraLightPink, colours.lightPink]}
         style={styles.gradient}
       >
-        <Card style={styles.container}>
+        <Card
+          style={{
+            ...styles.container,
+            backgroundColor:
+              mode === modes.LOGIN ? colours.white : colours.lightAccent,
+          }}
+        >
           <ScrollView>
             <Text style={styles.title}>{mode}</Text>
             <UserInput
