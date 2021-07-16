@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_KEY, API_SIGNUP_URL, API_LOGIN_URL } from '@env';
 import errors from '../constants/errors';
 
@@ -18,6 +19,30 @@ const initialState = {
   error: null,
   signupOK: null,
   loginOK: null,
+};
+
+const saveDataToStorage = (
+  idToken,
+  email,
+  refreshToken,
+  expiresIn,
+  localId,
+  registered,
+  displayName
+) => {
+  const expirationTimeString = expiresIn.toISOString();
+  AsyncStorage.setItem(
+    'userData',
+    JSON.stringify({
+      idToken,
+      email,
+      refreshToken,
+      expirationTimeString,
+      localId,
+      registered,
+      displayName,
+    })
+  );
 };
 
 export const signup = createAsyncThunk(
@@ -56,7 +81,20 @@ export const login = createAsyncThunk(
       const response = await axios.post(APILoginURL, candidateCredentials);
 
       if (response.status === 200) {
-        dispatch(loginAction(response.data));
+        const responseData = response.data;
+        dispatch(loginAction(responseData));
+        const expirationTime = new Date(
+          new Date().getTime() + parseInt(responseData.expiresIn) * 1000
+        );
+        saveDataToStorage(
+          responseData.idToken,
+          responseData.localId,
+          responseData.refreshToken,
+          expirationTime,
+          responseData.localId,
+          responseData.registered,
+          responseData.displayName
+        );
       }
     } catch (error) {
       const errorData = error.response.data;
