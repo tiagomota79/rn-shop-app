@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { API_KEY, API_SIGNUP_URL, API_LOGIN_URL } from '@env';
+import errors from '../constants/errors';
 
 const APISignupURL = `${API_SIGNUP_URL}${API_KEY}`;
 
@@ -13,6 +14,9 @@ const initialState = {
   expiresIn: null,
   localId: null,
   registered: null,
+  displayName: null,
+  error: null,
+  signupOK: null,
 };
 
 export const signup = createAsyncThunk(
@@ -31,15 +35,15 @@ export const signup = createAsyncThunk(
         dispatch(signupAction(response.data));
       }
     } catch (error) {
-      const errorText = error.response.data;
-      console.error(errorText);
-      throw error;
+      const errorData = error.response.data;
+      const errorMessage = errorData.error.message;
+      dispatch(errorAction(errorMessage));
     }
   }
 );
 
 export const login = createAsyncThunk(
-  'post/signup',
+  'post/login',
   async (params, { dispatch }) => {
     const candidateCredentials = {
       email: params.email,
@@ -51,12 +55,18 @@ export const login = createAsyncThunk(
       const response = await axios.post(APILoginURL, candidateCredentials);
 
       if (response.status === 200) {
-        dispatch(signupAction(response.data));
+        dispatch(loginAction(response.data));
       }
     } catch (error) {
-      const errorText = error.response.data;
-      console.error(errorText);
-      throw error;
+      const errorData = error.response.data;
+      let errorMessage = errorData.error.message;
+      if (
+        errorMessage === errors.invalidPassword ||
+        errorMessage === errors.emailNotFound
+      ) {
+        errorMessage = errors.unauthorized;
+      }
+      dispatch(errorAction(errorMessage));
     }
   }
 );
@@ -70,30 +80,47 @@ export const authSlice = createSlice({
         action.payload;
 
       return {
+        ...state,
         idToken,
         email,
         refreshToken,
         expiresIn,
         localId,
+        signupOK: true,
       };
     },
-    loginAction: (_, action) => {
-      const { idToken, email, refreshToken, expiresIn, localId, registered } =
-        action.payload;
-
-      return {
+    loginAction: (state, action) => {
+      const {
         idToken,
         email,
         refreshToken,
         expiresIn,
         localId,
         registered,
+        displayName,
+      } = action.payload;
+
+      return {
+        ...state,
+        idToken,
+        email,
+        refreshToken,
+        expiresIn,
+        localId,
+        registered,
+        displayName,
+      };
+    },
+    errorAction: (state, action) => {
+      return {
+        ...state,
+        error: action.payload,
       };
     },
   },
 });
 
-export const { signupAction, loginAction } = authSlice.actions;
+export const { signupAction, loginAction, errorAction } = authSlice.actions;
 
 export const selectAuthState = (state) => state.auth;
 

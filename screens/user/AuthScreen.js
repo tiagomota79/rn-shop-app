@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useCallback } from 'react';
+import React, { useState, useReducer, useCallback, useEffect } from 'react';
 import {
   ScrollView,
   View,
@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,9 +20,10 @@ import Card from '../../components/UI/Card';
 // Constants
 import colours from '../../constants/colours';
 import stylesConstants from '../../constants/stylesConstants';
+import errors from '../../constants/errors';
 
 // Slice
-import { selectAuthState, signup } from '../../slices/authSlice';
+import { login, selectAuthState, signup } from '../../slices/authSlice';
 
 // Utils
 import { formReducer } from '../../utils';
@@ -35,14 +37,53 @@ const AuthScreen = () => {
   const [mode, setMode] = useState(modes.LOGIN);
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
 
   const authState = useSelector(selectAuthState);
 
-  if (authState.email) {
-    console.log('authState', authState);
-  }
+  useEffect(() => {
+    if (authState.signupOK) {
+      Alert.alert('You are all set!', 'Enter your credentials to login now', [
+        { text: 'OK' },
+      ]);
+      setIsLoading(false);
+      return setMode(modes.LOGIN);
+    }
+
+    if (authState.error === errors.emailExists) {
+      Alert.alert(
+        'Email already exists',
+        'This email is already registered. Have you forgot your password?',
+        [{ text: 'OK' }]
+      );
+    }
+
+    if (authState.error === errors.unauthorized) {
+      Alert.alert(
+        'Unauthorized acces',
+        'Check your credentials and try again',
+        [{ text: 'OK' }]
+      );
+    }
+
+    if (authState.error && authState.error.includes(errors.tooManyAttempts)) {
+      Alert.alert(
+        'Too many attempts',
+        'Please wait a few minutes before trying again',
+        [{ text: 'OK' }]
+      );
+    }
+
+    if (authState.error) {
+      Alert.alert(
+        'An error ocurred',
+        'Please wait a few minutes before trying again',
+        [{ text: 'OK' }]
+      );
+    }
+  }, [authState]);
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValue: {
@@ -72,24 +113,30 @@ const AuthScreen = () => {
     [dispatchFormState]
   );
 
-  const handleSignup = () => {
+  const handleAuth = () => {
+    let action;
+    if (mode === modes.SIGNUP) {
+      action = signup;
+    } else {
+      action = login;
+    }
+
+    setIsLoading(true);
+
+    if (!isValidEmail) {
+      Alert.alert('Invalid email', 'Check the form and try again', [
+        { text: 'OK' },
+      ]);
+      setIsLoading(false);
+    }
+
     if (isValidPassword && isValidEmail) {
       const { email, password } = formState.inputValue;
 
-      dispatch(signup({ email, password }));
-      console.log('Sign Up dispatched', { email, password });
-      Alert.alert('You are all set!', 'Enter your credentials to login now', [
-        { text: 'OK' },
-      ]);
-      return setMode(modes.LOGIN);
+      dispatch(action({ email, password }));
+      setIsLoading(false);
     }
-
-    return Alert.alert('Errors on form', 'Please check your form for errors', [
-      { text: 'OK' },
-    ]);
   };
-
-  const handleLogin = () => {};
 
   const handleSwitchMode = () => {
     mode === modes.LOGIN ? setMode(modes.SIGNUP) : setMode(modes.LOGIN);
@@ -158,11 +205,15 @@ const AuthScreen = () => {
               </Text>
             )}
             <View style={styles.buttonsContainer}>
-              <Button
-                title={mode === modes.LOGIN ? modes.LOGIN : 'Sign Up'}
-                onPress={mode === modes.LOGIN ? handleLogin : handleSignup}
-                color={colours.primary}
-              />
+              {isLoading ? (
+                <ActivityIndicator size='small' color={colours.primary} />
+              ) : (
+                <Button
+                  title={mode === modes.LOGIN ? modes.LOGIN : 'Sign Up'}
+                  onPress={handleAuth}
+                  color={colours.primary}
+                />
+              )}
             </View>
             <Text style={styles.text}>
               {mode === modes.LOGIN
