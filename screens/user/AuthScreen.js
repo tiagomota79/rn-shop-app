@@ -33,7 +33,7 @@ export const modes = {
   SIGNUP: 'Sign Up',
 };
 
-const AuthScreen = () => {
+const AuthScreen = ({ navigation }) => {
   const [mode, setMode] = useState(modes.LOGIN);
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
@@ -44,6 +44,10 @@ const AuthScreen = () => {
   const authState = useSelector(selectAuthState);
 
   useEffect(() => {
+    if (authState.loginOK) {
+      navigation.navigate('Shop');
+    }
+
     if (authState.signupOK) {
       Alert.alert('You are all set!', 'Enter your credentials to login now', [
         { text: 'OK' },

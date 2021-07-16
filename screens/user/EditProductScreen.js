@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // Components
 import CustomHeaderButton from '../../components/UI/HeaderButton';
@@ -21,6 +21,7 @@ import stylesConstants from '../../constants/stylesConstants';
 
 // Slices
 import { createProduct, updateProduct } from '../../slices/productsSlice';
+import { selectAuthState } from '../../slices/authSlice';
 
 // Utils
 import { formReducer } from '../../utils';
@@ -30,6 +31,7 @@ const EditProductScreen = ({ navigation }) => {
   const [error, setError] = useState();
 
   const dispatch = useDispatch();
+  const authState = useSelector(selectAuthState);
 
   const productData = navigation.getParam('productData');
 
@@ -76,6 +78,8 @@ const EditProductScreen = ({ navigation }) => {
             title,
             imageUrl,
             description,
+            token: authState.idToken,
+            ownerId: authState.localId,
           })
         );
       } else {
@@ -85,6 +89,8 @@ const EditProductScreen = ({ navigation }) => {
             imageUrl,
             price: +price,
             description,
+            token: authState.idToken,
+            ownerId: authState.localId,
           })
         );
       }

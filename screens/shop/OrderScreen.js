@@ -16,6 +16,7 @@ import OrderItem from '../../components/shop/OrderItem';
 
 // Slices
 import { selectOrders, setOrders } from '../../slices/orderSlice';
+import { selectAuthState } from '../../slices/authSlice';
 
 // Constants
 import colours from '../../constants/colours';
@@ -26,10 +27,14 @@ const OrderScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const orders = useSelector(selectOrders);
+  const authState = useSelector(selectAuthState);
+
+  const token = authState.idToken;
+  const userId = authState.localId;
 
   const loadOrders = useCallback(async () => {
     setIsLoading(true);
-    await dispatch(setOrders());
+    await dispatch(setOrders({ token, userId }));
     setIsLoading(false);
   }, [setIsLoading, dispatch]);
 

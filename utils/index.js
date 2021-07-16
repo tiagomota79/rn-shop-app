@@ -63,7 +63,7 @@ export const firebaseObjectToArray = (object) => {
     array.push(
       new Product(
         key,
-        'u1',
+        object[key].ownerId,
         object[key].title,
         object[key].imageUrl,
         object[key].description,
