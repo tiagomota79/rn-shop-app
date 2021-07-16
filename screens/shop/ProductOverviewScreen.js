@@ -18,6 +18,7 @@ import CustomHeaderButton from '../../components/UI/HeaderButton';
 // Slices
 import { selectProducts, setProducts } from '../../slices/productsSlice';
 import { addToCart } from '../../slices/cartSlice';
+import { selectAuthState } from '../../slices/authSlice';
 
 // Constants
 import colours from '../../constants/colours';
@@ -28,12 +29,16 @@ const ProductOverviewScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const products = useSelector(selectProducts);
+  const authState = useSelector(selectAuthState);
+
+  const token = authState.idToken;
+  const userId = authState.localId;
 
   const loadProducts = useCallback(async () => {
     setError(null);
     setIsLoading(true);
     try {
-      await dispatch(setProducts());
+      await dispatch(setProducts({ token, userId }));
     } catch (error) {
       setError(error.response.data);
     }

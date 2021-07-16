@@ -1,5 +1,12 @@
 import React from 'react';
-import { FlatList, Platform, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Platform,
+  Alert,
+  StyleSheet,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -10,6 +17,9 @@ import CustomHeaderButton from '../../components/UI/HeaderButton';
 // Slices
 import { deleteProduct, selectUserProducts } from '../../slices/productsSlice';
 import { deleteFromCart } from '../../slices/cartSlice';
+
+// Constants
+import colours from '../../constants/colours';
 
 const UserProductsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -34,6 +44,14 @@ const UserProductsScreen = ({ navigation }) => {
       },
     ]);
   };
+
+  if (userProducts.length <= 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>You have no products. Add some!</Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
@@ -79,5 +97,17 @@ UserProductsScreen.navigationOptions = (navigationData) => {
     ),
   };
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colours.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontFamily: 'open-sans',
+  },
+});
 
 export default UserProductsScreen;

@@ -27,6 +27,7 @@ import {
   selectTotalAmount,
 } from '../../slices/cartSlice';
 import { addOrder } from '../../slices/orderSlice';
+import { selectAuthState } from '../../slices/authSlice';
 
 // Utils
 import { formatPrice, objectOfCartsToArray } from '../../utils';
@@ -38,6 +39,10 @@ const CartScreen = () => {
 
   const totalAmount = useSelector(selectTotalAmount);
   const cartItems = useSelector(selectItemsInCart);
+  const authState = useSelector(selectAuthState);
+
+  const token = authState.idToken;
+  const userId = authState.localId;
 
   const arrayOfCartItems = objectOfCartsToArray(cartItems);
 
@@ -47,7 +52,9 @@ const CartScreen = () => {
 
   const handleOrderNow = async () => {
     setIsLoading(true);
-    await dispatch(addOrder({ cartItems: arrayOfCartItems, totalAmount }));
+    await dispatch(
+      addOrder({ cartItems: arrayOfCartItems, totalAmount, token, userId })
+    );
     dispatch(clearCart());
     setIsLoading(false);
   };

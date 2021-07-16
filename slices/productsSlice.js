@@ -14,16 +14,18 @@ const initialState = {
 
 export const setProducts = createAsyncThunk(
   'get/products',
-  async (_, { dispatch }) => {
+  async (params, { dispatch }) => {
+    const { token, userId } = params;
+
     try {
-      const response = await axios.get(`${API_URL}products.json`);
+      const response = await axios.get(`${API_URL}products.json?auth=${token}`);
 
       const productsToSet = firebaseObjectToArray(response.data);
 
-      dispatch(setProductsAction(productsToSet));
+      dispatch(setProductsAction({ productsToSet, userId }));
     } catch (error) {
       const errorText = error.response.data;
-      console.error(errorText);
+      console.error('setProducts error', errorText);
       throw error;
     }
   }
@@ -32,16 +34,19 @@ export const setProducts = createAsyncThunk(
 export const createProduct = createAsyncThunk(
   'post/product',
   async (params, { dispatch, rejectWithValue }) => {
+    const { token, ownerId } = params;
+
     const productToCreate = {
       title: params.title,
       imageUrl: params.imageUrl,
       price: params.price,
       description: params.description,
+      ownerId,
     };
 
     try {
       const response = await axios.post(
-        `${API_URL}products.json`,
+        `${API_URL}products.json?auth=${token}`,
         productToCreate
       );
 
@@ -51,6 +56,7 @@ export const createProduct = createAsyncThunk(
           createProductAction({
             ...productToCreate,
             id,
+            ownerId,
           })
         );
       }
@@ -65,7 +71,7 @@ export const createProduct = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
   'patch/product',
   async (params, { dispatch, rejectWithValue }) => {
-    const id = params.id;
+    const { id, token, ownerId } = params;
 
     const productToUpdate = {
       title: params.title,
@@ -75,13 +81,15 @@ export const updateProduct = createAsyncThunk(
 
     try {
       const response = await axios.patch(
-        `${API_URL}products/${id}.json`,
+        `${API_URL}products/${id}.json?auth=${token}`,
         productToUpdate
       );
 
       if (response.status === 200) {
         const { title, description, imageUrl } = await response.data;
-        dispatch(updateProductAction({ id, title, description, imageUrl }));
+        dispatch(
+          updateProductAction({ id, title, description, imageUrl, ownerId })
+        );
       }
     } catch (error) {
       const errorText = error.response.data;
@@ -94,10 +102,12 @@ export const updateProduct = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   'delete/product',
   async (params, { dispatch, rejectWithValue }) => {
-    const id = params;
+    const { id, token } = params;
 
     try {
-      const response = await axios.delete(`${API_URL}products/${id}.json`);
+      const response = await axios.delete(
+        `${API_URL}products/${id}.json?auth=${token}`
+      );
 
       if (response.status === 200) {
         dispatch(deleteProductAction(id));
@@ -114,10 +124,12 @@ export const productsSlice = createSlice({
   initialState,
   reducers: {
     setProductsAction: (state, action) => {
+      const { productsToSet, userId } = action.payload;
+
       return {
-        availableProducts: action.payload,
-        userProducts: action.payload.filter(
-          (product) => product.ownerId === 'u1'
+        availableProducts: productsToSet,
+        userProducts: productsToSet.filter(
+          (product) => product.ownerId === userId
         ),
       };
     },
@@ -135,11 +147,12 @@ export const productsSlice = createSlice({
       };
     },
     createProductAction: (state, action) => {
-      const { id, title, imageUrl, price, description } = action.payload;
+      const { id, ownerId, title, imageUrl, price, description } =
+        action.payload;
 
       const newProduct = new Product(
         id,
-        'u1',
+        ownerId,
         title,
         imageUrl,
         description,
@@ -153,7 +166,7 @@ export const productsSlice = createSlice({
       };
     },
     updateProductAction: (state, action) => {
-      const { id, title, imageUrl, description } = action.payload;
+      const { id, title, imageUrl, description, ownerId } = action.payload;
 
       const userProductIndex = state.userProducts.findIndex(
         (product) => product.id === id
@@ -167,7 +180,7 @@ export const productsSlice = createSlice({
 
       const updatedProduct = new Product(
         id,
-        productToUpdate.ownerId,
+        ownerId,
         title,
         imageUrl,
         description,

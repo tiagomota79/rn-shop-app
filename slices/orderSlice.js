@@ -12,9 +12,13 @@ const initialState = {
 
 export const setOrders = createAsyncThunk(
   'get/orders',
-  async (_, { dispatch }) => {
+  async (params, { dispatch }) => {
+    const { token, userId } = params;
+
     try {
-      const response = await axios.get(`${API_URL}orders/u1.json`);
+      const response = await axios.get(
+        `${API_URL}orders/${userId}.json?auth=${token}`
+      );
 
       const ordersToSet = firebaseOrderObjectToArray(response.data);
 
@@ -32,6 +36,8 @@ export const setOrders = createAsyncThunk(
 export const addOrder = createAsyncThunk(
   'post/order',
   async (params, { dispatch }) => {
+    const { token, userId } = params;
+
     const orderToCreate = {
       cartItems: params.cartItems,
       totalAmount: params.totalAmount,
@@ -39,7 +45,10 @@ export const addOrder = createAsyncThunk(
     };
 
     try {
-      await axios.post(`${API_URL}orders/u1.json`, orderToCreate);
+      await axios.post(
+        `${API_URL}orders/${userId}.json?auth=${token}`,
+        orderToCreate
+      );
     } catch (error) {
       const errorText = error.response.data;
       console.error(errorText);
