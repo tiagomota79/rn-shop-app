@@ -37,13 +37,17 @@ const ProductOverviewScreen = ({ navigation }) => {
   const loadProducts = useCallback(async () => {
     setError(null);
     setIsLoading(true);
-    try {
-      await dispatch(setProducts({ token, userId }));
-    } catch (error) {
-      setError(error.response.data);
+
+    if (authState.loginOK) {
+      try {
+        await dispatch(setProducts({ token, userId }));
+      } catch (error) {
+        setError(error.response.data);
+      }
     }
+
     setIsLoading(false);
-  }, [dispatch, setIsLoading, setError]);
+  }, [dispatch, setIsLoading, setError, authState]);
 
   useEffect(() => {
     const willFocusSubscription = navigation.addListener(
