@@ -17,6 +17,7 @@ const initialState = {
   displayName: null,
   error: null,
   signupOK: null,
+  loginOK: null,
 };
 
 export const signup = createAsyncThunk(
@@ -109,6 +110,7 @@ export const authSlice = createSlice({
         localId,
         registered,
         displayName,
+        loginOK: true,
       };
     },
     errorAction: (state, action) => {
