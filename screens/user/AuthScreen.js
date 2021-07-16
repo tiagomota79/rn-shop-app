@@ -79,14 +79,6 @@ const AuthScreen = ({ navigation }) => {
         [{ text: 'OK' }]
       );
     }
-
-    if (authState.error) {
-      Alert.alert(
-        'An error ocurred',
-        'Please wait a few minutes before trying again',
-        [{ text: 'OK' }]
-      );
-    }
   }, [authState]);
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
