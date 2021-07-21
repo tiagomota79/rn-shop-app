@@ -4,7 +4,7 @@ Simple application created as part of React-Native learning.
 
 Online shopping app where users can buy and sell items.
 
-This is only a mobile front-end project. The information is stored in a simple Firebase server.123456
+This is only a mobile front-end project. The information is stored in a simple Firebase server.
 
 ### Features
 
